@@ -1,46 +1,12 @@
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { FormEvent, useState } from "react";
+import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import styled from "styled-components";
 import { auth } from "../firebase";
-import { useNavigate } from "react-router-dom";
-
-const Wrapper = styled.div`
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 420px;
-  padding: 50px 0px;
-`;
-const Title = styled.h1`
-  font-size: 42px;
-`;
-const Form = styled.form`
-  margin-top: 50px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 100%;
-`;
-const Input = styled.input`
-  padding: 10px 20px;
-  border-radius: 50px;
-  border: none;
-  width: 100%;
-  font-size: 16px;
-  &[type="submit"] {
-    cursor: pointer;
-    &:hover {
-      opacity: 0.8;
-    }
-  }
-`;
-const Error = styled.span`
-  font-size: 13px;
-  font-weight: 500;
-  color: tomato;
-`;
+import { Link, Navigate, useNavigate } from "react-router-dom";
+import { FirebaseError } from "firebase/app";
+import { Error, Form, Input, Switcher, Title, Wrapper } from "../components/auth-components";
+import GithubButton from "../components/github-btn";
+import { FirebaseErrorMessage } from "../components/message-components";
 
 interface FormInput {
   name: string;
@@ -49,23 +15,30 @@ interface FormInput {
 }
 
 export default function CreateAccount() {
+  const user = auth.currentUser;
+  if (user) return <Navigate to="/" />
+
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
-  const { register, handleSubmit, formState: {errors} } = useForm<FormInput>();
+  const [loading, setLoading] = useState(false);
+  const { register, handleSubmit, setError, reset, formState: {errors} } = useForm<FormInput>();
   const onSubmit: SubmitHandler<FormInput> = async(data) => {
-    if (isLoading) return;
+    if (loading) return;
     try {
-      setIsLoading(true);
+      setLoading(true);
       const credentials = await createUserWithEmailAndPassword(auth, data.email, data.password);
-      console.log(credentials.user);
       await updateProfile(credentials.user, {
         displayName: data.name
       });
       navigate("/");
     } catch(e) {
-
+      if (e instanceof FirebaseError) {
+        setError("email", {
+          type: "manual",
+          message: FirebaseErrorMessage[e.code],
+        });
+      }
     } finally {
-      setIsLoading(true);
+      setLoading(false);
     }
   };
   return (
@@ -73,27 +46,31 @@ export default function CreateAccount() {
       <Title>Join X</Title>
       <Form onSubmit={handleSubmit(onSubmit)}>
         <Input type="text" placeholder="name" {...register('name', {
-          required: "Name is required."
+          required: "이름은 필수입니다."
         })} />
         <Error>{errors?.name?.message}</Error>
         <Input type="text" placeholder="email" {...register('email', {
-          required: "Email is required.",
+          required: "이메일은 필수입니다.",
           pattern: {
             value: /\S+@\S+\.\S+/,
-            message: "Please check your email.",
+            message: "올바른 이메일을 입력해주세요.",
           }
         })} />
         <Error>{errors?.email?.message}</Error>
         <Input type="password" placeholder="password" {...register('password', {
-          required: "Password is required.",
+          required: "비밀번호는 필수입니다.",
           minLength: {
             value: 8,
-            message: "Please use a password of at least 8 characters.",
+            message: "비밀번호는 최소 8글자 이상이어야 합니다.",
           },
         })} />
         <Error>{errors?.password?.message}</Error>
-        <Input type="submit" value={isLoading ? "Loading..." : "Create Account"}/>
+        <Input type="submit" value={loading ? "Loading..." : "Join"}/>
       </Form>
+      <Switcher>
+        Already have an account? <Link to="/login">Login</Link>
+      </Switcher>
+      <GithubButton resetForm={reset}/>
     </Wrapper>
   );
 }
