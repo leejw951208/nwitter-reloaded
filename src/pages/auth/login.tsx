@@ -27,8 +27,6 @@ interface FormInput {
 }
 
 export default function Login() {
-  if (auth.currentUser) return <Navigate to="/" />
-
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const { register, handleSubmit, setError, reset, formState: {errors} } = useForm<FormInput>();

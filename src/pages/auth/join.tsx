@@ -15,9 +15,6 @@ interface FormInput {
 }
 
 export default function Join() {
-  const user = auth.currentUser;
-  if (user) return <Navigate to="/" />
-
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const { register, handleSubmit, setError, reset, formState: {errors} } = useForm<FormInput>();
