@@ -8,5 +8,9 @@ export default function Home() {
     await auth.signOut();
     navigate("/login")
   }
-  return <h1><button onClick={logout}>Logout</button></h1>
+  return (
+    <>
+      <h1><button onClick={logout}>Logout</button></h1>
+    </>
+  )
 }

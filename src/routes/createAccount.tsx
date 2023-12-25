@@ -1,12 +1,13 @@
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from "firebase/auth";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { auth } from "../firebase";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { FirebaseError } from "firebase/app";
 import { Error, Form, Input, Switcher, Title, Wrapper } from "../components/auth-components";
-import GithubButton from "../components/github-btn";
-import { FirebaseErrorMessage } from "../components/message-components";
+import { FirebaseErrorMessage } from "../components/error-message";
+import OAuthGithub from "../components/oauth-github";
+import OAuthGoogle from "../components/oauth-google";
 
 interface FormInput {
   name: string;
@@ -26,10 +27,12 @@ export default function CreateAccount() {
     try {
       setLoading(true);
       const credentials = await createUserWithEmailAndPassword(auth, data.email, data.password);
+      sendEmailVerification(credentials.user); // 이메일 링크 전송
       await updateProfile(credentials.user, {
         displayName: data.name
       });
-      navigate("/");
+      auth.signOut(); // 회원가입 시 자동 로그인이 되서 강제 로그아웃
+      navigate("/login");
     } catch(e) {
       if (e instanceof FirebaseError) {
         setError("email", {
@@ -70,7 +73,8 @@ export default function CreateAccount() {
       <Switcher>
         Already have an account? <Link to="/login">Login</Link>
       </Switcher>
-      <GithubButton resetForm={reset}/>
+      <OAuthGoogle resetForm={reset}/>
+      <OAuthGithub resetForm={reset}/>
     </Wrapper>
   );
 }

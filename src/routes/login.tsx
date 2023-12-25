@@ -5,8 +5,20 @@ import { Link, Navigate, useNavigate } from "react-router-dom";
 import { FirebaseError } from "firebase/app";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { Error, Form, Input, Switcher, Title, Wrapper } from "../components/auth-components";
-import GithubButton from "../components/github-btn";
-import { FirebaseErrorMessage } from "../components/message-components";
+import { FirebaseErrorMessage } from "../components/error-message";
+import styled from "styled-components";
+import OAuthGithub from "../components/oauth-github";
+import OAuthGoogle from "../components/oauth-google";
+
+const ForgotPassword = styled.span`
+  display: flex;
+  justify-content: flex-end;
+  color: #1d9bf0;
+  cursor: pointer;
+  &:hover {
+    opacity: 0.8;
+  }
+`;
 
 interface FormInput {
   name: string;
@@ -15,8 +27,7 @@ interface FormInput {
 }
 
 export default function Login() {
-  const user = auth.currentUser;
-  if (user) return <Navigate to="/" />
+  if (auth.currentUser) return <Navigate to="/" />
   
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -25,13 +36,22 @@ export default function Login() {
     if (loading) return;
     try {
       setLoading(true);
-      await signInWithEmailAndPassword(auth, data.email, data.password);
+      const credential = await signInWithEmailAndPassword(auth, data.email, data.password);
+      if (!credential.user.emailVerified) {
+        auth.signOut();
+        throw "이메일 인증 후 로그인 가능합니다.";
+      }
       navigate("/");
     } catch(e) {
       if (e instanceof FirebaseError) {
         setError("root", {
           type: "manual",
           message: FirebaseErrorMessage[e.code],
+        });
+      } else if (typeof e === "string") {
+        setError("root", {
+          type: "manual",
+          message: e,
         });
       }
     } finally {
@@ -57,6 +77,9 @@ export default function Login() {
             message: "비밀번호는 최소 8글자 이상이어야 합니다.",
           },
         })} />
+        <ForgotPassword>
+          <Link to="/find-password">Forgot password?</Link> 
+        </ForgotPassword>
         <Error>{errors?.password?.message}</Error>
         <Input type="submit" value={loading ? "Loading..." : "Login"}/>
       </Form>
@@ -64,7 +87,8 @@ export default function Login() {
       <Switcher>
         Don't have an account? <Link to="/create-account">Create one &rarr;</Link>
       </Switcher>
-      <GithubButton resetForm={reset}/>
+      <OAuthGoogle resetForm={reset}/>
+      <OAuthGithub resetForm={reset}/>
     </Wrapper>
   );
 }
