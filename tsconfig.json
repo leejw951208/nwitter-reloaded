@@ -16,8 +16,8 @@
 
     /* Linting */
     "strict": true,
-    "noUnusedLocals": false, // deployment bug fix
-    "noUnusedParameters": false, // deployment bug fix
+    "noUnusedLocals": true, // deployment bug fix
+    "noUnusedParameters": true, // deployment bug fix
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "paths": {

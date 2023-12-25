@@ -13,17 +13,19 @@ import { FindPassword } from "./pages/auth/find-password"
 import Join from "./pages/auth/join"
 import Anonymous from "./components/layout/anonymous"
 
+console.log(import.meta.env)
+
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Protected><Layout /></Protected>,
     children: [
       {
-        path: "",
+        path: `${import.meta.env.PUBLIC_URL}`,
         element: <Home />,
       },
       {
-        path: "profile",
+        path: `${import.meta.env.PUBLIC_URL}profile`,
         element: <Profile />,
       }
     ]
