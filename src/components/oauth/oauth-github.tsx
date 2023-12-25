@@ -1,13 +1,15 @@
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { GithubAuthProvider, signInWithPopup } from "firebase/auth";
 import styled from "styled-components";
-import { auth } from "../firebase";
+import { auth } from "../../services/firebase/firebase";
 import { useState } from "react";
-import { Error } from "./auth-components";
-import { FirebaseErrorMessage } from "./error-message";
+import { Error } from "../../pages/auth/auth-style";
+import { FirebaseErrorMessage } from "../../constants/message";
 import { useNavigate } from "react-router-dom";
 
+import githubLogo from "@assets/img/github-logo.svg";
+
 const Button = styled.span`
-  margin-top: 50px;
+  margin-top: 10px;
   margin-bottom: 10px;
   background-color: white;
   font-weight: 500;
@@ -25,17 +27,16 @@ const Button = styled.span`
     opacity: 0.8;
   }
 `;
-
 const Logo = styled.img`
   height: 25px;
 `;
 
-export default function OAuthGoogle({ resetForm }: { resetForm: () => void }) {
+export default function OAuthGithub({ resetForm }: { resetForm: () => void }) {
   const navigate = useNavigate();
   const [error, setError] = useState("");
   const onClick = async () => {
-    resetForm();
-      const provider = new GoogleAuthProvider();
+      resetForm();
+      const provider = new GithubAuthProvider();
       signInWithPopup(auth, provider)
         .then(() => {
           navigate("/");
@@ -47,8 +48,8 @@ export default function OAuthGoogle({ resetForm }: { resetForm: () => void }) {
   return (
     <>
       <Button onClick={onClick}>
-        <Logo src="/google-logo.svg" />
-        Continue with Google
+        <Logo src={githubLogo} />
+        Continue with Github
       </Button>
       <Error>{error ? error : null}</Error>
     </>

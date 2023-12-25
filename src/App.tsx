@@ -1,21 +1,22 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom"
-import Layout from "./components/layout"
-import Home from "./routes/home"
-import Profile from "./routes/profile"
-import Login from "./routes/login"
-import CreateAccount from "./routes/createAccount"
+import { Layout, AnonymousLayout } from "./components/layout/layout"
+import Home from "./pages/home/home"
+import Profile from "./pages/profile/profile"
+import Login from "./pages/auth/login"
 import styled, { createGlobalStyle } from "styled-components"
 import reset from "styled-reset"
 import { useEffect, useState } from "react"
-import LoadingScreen from "./components/loading-screen"
-import { auth } from "./firebase"
-import ProtectedRoute from "./components/protected-route"
-import { FindPassword } from "./components/find-password"
+import LoadingScreen from "./components/loading"
+import { auth } from "./services/firebase/firebase"
+import Protected from "./components/layout/protected"
+import { FindPassword } from "./pages/auth/find-password"
+import Join from "./pages/auth/join"
+import Anonymous from "./components/layout/anonymous"
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <ProtectedRoute><Layout /></ProtectedRoute>,
+    element: <Protected><Layout /></Protected>,
     children: [
       {
         path: "",
@@ -28,17 +29,23 @@ const router = createBrowserRouter([
     ]
   },
   {
-    path: "/login",
-    element: <Login />
+    path: "/",
+    element: <Anonymous><AnonymousLayout /></Anonymous>,
+    children: [
+      {
+        path: "/login",
+        element: <Login />
+      },
+      {
+        path: "/join",
+        element: <Join />
+      },
+      {
+        path: "/find-password",
+        element: <FindPassword />
+      }
+    ]
   },
-  {
-    path: "/create-account",
-    element: <CreateAccount />
-  },
-  {
-    path: "/find-password",
-    element: <FindPassword />
-  }
 ]);
 
 const GlobaStyles = createGlobalStyle`

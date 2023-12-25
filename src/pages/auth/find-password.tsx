@@ -1,23 +1,27 @@
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { Error, Form, Input, Title, Wrapper } from "./auth-components";
-import { sendEmailVerification, sendPasswordResetEmail, updateEmail, validatePassword, verifyBeforeUpdateEmail, verifyPasswordResetCode } from "firebase/auth";
-import { auth } from "../firebase";
+import { Error, Form, Input, Title, Wrapper } from "./auth-style";
+import { sendPasswordResetEmail} from "firebase/auth";
+import { auth } from "../../services/firebase/firebase";
+import { useNavigate } from "react-router-dom";
 
 interface FormInput {
   email: string;
 }
 
 const FindPassword = () => {
+  const navigate = useNavigate()
   const [loading, setLoading] = useState(false);
-  const { register, handleSubmit, setError, reset, formState: {errors} } = useForm<FormInput>();
+  const { register, handleSubmit, formState: {errors} } = useForm<FormInput>();
   const onSubmit: SubmitHandler<FormInput> = async(data) => {
-    try {
-    } catch(e) {
-      console.log(e);
-    } finally {
-      setLoading(false);
-    }
+    setLoading(true);
+    sendPasswordResetEmail(auth, data.email)
+      .then(() => {
+        alert("비밀번호 재설정 이메일이 발송되었습니다.");
+        navigate("/login");
+      })
+      .catch((error) => console.log(error))
+      .finally(() => setLoading(false));
   }
   return (
     <Wrapper>

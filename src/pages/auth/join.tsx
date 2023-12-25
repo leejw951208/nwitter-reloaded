@@ -1,13 +1,12 @@
-import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from "firebase/auth";
+import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { auth } from "../firebase";
+import { auth } from "../../services/firebase/firebase";
 import { Link, Navigate, useNavigate } from "react-router-dom";
-import { FirebaseError } from "firebase/app";
-import { Error, Form, Input, Switcher, Title, Wrapper } from "../components/auth-components";
-import { FirebaseErrorMessage } from "../components/error-message";
-import OAuthGithub from "../components/oauth-github";
-import OAuthGoogle from "../components/oauth-google";
+import { Error, Form, Input, Switcher, Title, Wrapper } from "./auth-style";
+import { FirebaseErrorMessage } from "../../constants/message";
+import OAuthGithub from "../../components/oauth/oauth-github";
+import OAuthGoogle from "../../components/oauth/oauth-google";
 
 interface FormInput {
   name: string;
@@ -15,7 +14,7 @@ interface FormInput {
   password: string;
 }
 
-export default function CreateAccount() {
+export default function Join() {
   const user = auth.currentUser;
   if (user) return <Navigate to="/" />
 
@@ -24,34 +23,28 @@ export default function CreateAccount() {
   const { register, handleSubmit, setError, reset, formState: {errors} } = useForm<FormInput>();
   const onSubmit: SubmitHandler<FormInput> = async(data) => {
     if (loading) return;
-    try {
-      setLoading(true);
-      const credentials = await createUserWithEmailAndPassword(auth, data.email, data.password);
-      sendEmailVerification(credentials.user); // 이메일 링크 전송
-      await updateProfile(credentials.user, {
-        displayName: data.name
-      });
-      auth.signOut(); // 회원가입 시 자동 로그인이 되서 강제 로그아웃
-      navigate("/login");
-    } catch(e) {
-      if (e instanceof FirebaseError) {
+
+    setLoading(true);
+    createUserWithEmailAndPassword(auth, data.email, data.password)
+      .then((result) => {
+        sendEmailVerification(result.user)
+          .then(() => {
+            alert("인증 메일이 발송되었습니다.");
+            navigate("/")
+          })
+      })
+      .catch(error => {
         setError("email", {
           type: "manual",
-          message: FirebaseErrorMessage[e.code],
+          message: FirebaseErrorMessage[error.code],
         });
-      }
-    } finally {
-      setLoading(false);
-    }
+      })
+      .finally(() => setLoading(false));
   };
   return (
     <Wrapper>
-      <Title>Join X</Title>
+      <Title>Join</Title>
       <Form onSubmit={handleSubmit(onSubmit)}>
-        <Input type="text" placeholder="name" {...register('name', {
-          required: "이름은 필수입니다."
-        })} />
-        <Error>{errors?.name?.message}</Error>
         <Input type="text" placeholder="email" {...register('email', {
           required: "이메일은 필수입니다.",
           pattern: {

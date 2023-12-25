@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { auth } from "../firebase";
+import { auth } from "../../services/firebase/firebase";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { FirebaseError } from "firebase/app";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { Error, Form, Input, Switcher, Title, Wrapper } from "../components/auth-components";
-import { FirebaseErrorMessage } from "../components/error-message";
+import { Error, Form, Input, Switcher, Title, Wrapper } from "./auth-style";
+import { FirebaseErrorMessage } from "../../constants/message";
 import styled from "styled-components";
-import OAuthGithub from "../components/oauth-github";
-import OAuthGoogle from "../components/oauth-google";
+import OAuthGithub from "../../components/oauth/oauth-github";
+import OAuthGoogle from "../../components/oauth/oauth-google";
 
 const ForgotPassword = styled.span`
   display: flex;
@@ -28,39 +28,40 @@ interface FormInput {
 
 export default function Login() {
   if (auth.currentUser) return <Navigate to="/" />
-  
+
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const { register, handleSubmit, setError, reset, formState: {errors} } = useForm<FormInput>();
   const onSubmit: SubmitHandler<FormInput> = async(data) => {
     if (loading) return;
-    try {
-      setLoading(true);
-      const credential = await signInWithEmailAndPassword(auth, data.email, data.password);
-      if (!credential.user.emailVerified) {
-        auth.signOut();
-        throw "이메일 인증 후 로그인 가능합니다.";
-      }
-      navigate("/");
-    } catch(e) {
-      if (e instanceof FirebaseError) {
-        setError("root", {
-          type: "manual",
-          message: FirebaseErrorMessage[e.code],
-        });
-      } else if (typeof e === "string") {
-        setError("root", {
-          type: "manual",
-          message: e,
-        });
-      }
-    } finally {
-      setLoading(false);
-    }
+
+    setLoading(true);
+    signInWithEmailAndPassword(auth, data.email, data.password)
+      .then((result) => {
+        if (!result.user.emailVerified) {
+          auth.signOut();
+          throw "이메일 인증 후 로그인 가능합니다.";          
+        }
+        navigate("/")
+      })
+      .catch((error) => {
+        if (error instanceof FirebaseError) {
+          setError("root", {
+            type: "manual",
+            message: FirebaseErrorMessage[error.code],
+          });
+        } else if (typeof error === "string") {
+          setError("root", {
+            type: "manual",
+            message: error,
+          });
+        }
+      })
+      .finally(() => setLoading(false));
   };
   return (
     <Wrapper>
-      <Title>Login X</Title>
+      <Title>Login</Title>
       <Form onSubmit={handleSubmit(onSubmit)}>
         <Input type="text" placeholder="email" {...register('email', {
           required: "이메일은 필수입니다.",
@@ -69,7 +70,7 @@ export default function Login() {
             message: "올바른 이메일을 입력해주세요.",
           }
         })} />
-        <Error>{errors?.email?.message}</Error>
+        <Error>{errors?.email?.message}</Error>        
         <Input type="password" placeholder="password" {...register('password', {
           required: "비밀번호는 필수입니다.",
           minLength: {
@@ -85,7 +86,7 @@ export default function Login() {
       </Form>
       <Error>{errors?.root?.message}</Error>
       <Switcher>
-        Don't have an account? <Link to="/create-account">Create one &rarr;</Link>
+        Don't have an account? <Link to="/join">Join &rarr;</Link>
       </Switcher>
       <OAuthGoogle resetForm={reset}/>
       <OAuthGithub resetForm={reset}/>
