@@ -39,7 +39,7 @@ export default function OAuthGithub({ resetForm }: { resetForm: () => void }) {
       const provider = new GithubAuthProvider();
       signInWithPopup(auth, provider)
         .then(() => {
-          navigate("/");
+          navigate(import.meta.env.BASE_URL);
         })
         .catch(e => {
           setError(FirebaseErrorMessage[e.code]);

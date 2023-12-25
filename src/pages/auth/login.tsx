@@ -42,7 +42,7 @@ export default function Login() {
           auth.signOut();
           throw "이메일 인증 후 로그인 가능합니다.";          
         }
-        navigate("/")
+        navigate(import.meta.env.BASE_URL)
       })
       .catch((error) => {
         if (error instanceof FirebaseError) {
@@ -79,14 +79,14 @@ export default function Login() {
           },
         })} />
         <ForgotPassword>
-          <Link to="/find-password">Forgot password?</Link> 
+          <Link to={`${import.meta.env.BASE_URL}find-password`}>Forgot password?</Link> 
         </ForgotPassword>
         <Error>{errors?.password?.message}</Error>
         <Input type="submit" value={loading ? "Loading..." : "Login"}/>
       </Form>
       <Error>{errors?.root?.message}</Error>
       <Switcher>
-        Don't have an account? <Link to="/join">Join &rarr;</Link>
+        Don't have an account? <Link to={`${import.meta.env.BASE_URL}join`}>Join &rarr;</Link>
       </Switcher>
       <OAuthGoogle resetForm={reset}/>
       <OAuthGithub resetForm={reset}/>

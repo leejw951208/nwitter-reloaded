@@ -6,7 +6,7 @@ export default function Home() {
   const navigate = useNavigate();
   const logout = async() => {
     await auth.signOut();
-    navigate("/login")
+    navigate(`${import.meta.env.BASE_URL}login`)
   }
   return (
     <>

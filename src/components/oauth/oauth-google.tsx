@@ -40,7 +40,7 @@ export default function OAuthGoogle({ resetForm }: { resetForm: () => void }) {
       const provider = new GoogleAuthProvider();
       signInWithPopup(auth, provider)
         .then(() => {
-          navigate("/");
+          navigate(import.meta.env.BASE_URL);
         })
         .catch(e => {
           setError(FirebaseErrorMessage[e.code]);
