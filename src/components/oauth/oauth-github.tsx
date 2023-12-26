@@ -7,9 +7,10 @@ import { FirebaseErrorMessage } from "../../constants/message";
 import { useNavigate } from "react-router-dom";
 
 import githubLogo from "@assets/img/github-logo.svg";
+import { FirebaseError } from "@firebase/util";
 
 const Button = styled.span`
-  margin-top: 10px;
+  margin-top: 5px;
   margin-bottom: 10px;
   background-color: white;
   font-weight: 500;
@@ -34,16 +35,16 @@ const Logo = styled.img`
 export default function OAuthGithub({ resetForm }: { resetForm: () => void }) {
   const navigate = useNavigate();
   const [error, setError] = useState("");
-  const onClick = async () => {
+  const onClick = async() => {
+    try {
       resetForm();
-      const provider = new GithubAuthProvider();
-      signInWithPopup(auth, provider)
-        .then(() => {
-          navigate("/");
-        })
-        .catch(e => {
-          setError(FirebaseErrorMessage[e.code]);
-        });
+      await signInWithPopup(auth, new GithubAuthProvider());
+      navigate("/");
+    } catch(e) {
+      if (e instanceof FirebaseError) {
+        setError(FirebaseErrorMessage[e.code]);
+      }
+    }
   };
   return (
     <>

@@ -1,11 +1,11 @@
-import { Link, Outlet } from "react-router-dom";
-import { Header } from "./header";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { auth } from "@src/services/firebase/firebase";
 
 const Wrapper = styled.div`
   display: grid;
   gap: 20px;
-  grid-template-columns: 1fr 4fr;
+  grid-template-columns: 1fr 6fr;
   height: 100%;
   padding: 50px 0px;
   width: 100%;
@@ -14,7 +14,6 @@ const Wrapper = styled.div`
 const Menu = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 20px;
 `;
 const MenuItem = styled.div`
@@ -39,8 +38,13 @@ const MenuItem = styled.div`
 `;
 
 export function Layout() {
+  const navigate = useNavigate()
   const onLogout = async() => {
     const ok = confirm("로그아웃 하시겠습니까?");
+    if (ok) {
+      await auth.signOut();
+      navigate("/login");
+    }
   }
   return (
     <Wrapper>
@@ -59,7 +63,7 @@ export function Layout() {
             </svg>
           </MenuItem>
         </Link>
-        <MenuItem className="logout">
+        <MenuItem className="logout" onClick={onLogout}>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
             <path fillRule="evenodd" d="M17 4.25A2.25 2.25 0 0 0 14.75 2h-5.5A2.25 2.25 0 0 0 7 4.25v2a.75.75 0 0 0 1.5 0v-2a.75.75 0 0 1 .75-.75h5.5a.75.75 0 0 1 .75.75v11.5a.75.75 0 0 1-.75.75h-5.5a.75.75 0 0 1-.75-.75v-2a.75.75 0 0 0-1.5 0v2A2.25 2.25 0 0 0 9.25 18h5.5A2.25 2.25 0 0 0 17 15.75V4.25Z" clipRule="evenodd" />
             <path fillRule="evenodd" d="M14 10a.75.75 0 0 0-.75-.75H3.704l1.048-.943a.75.75 0 1 0-1.004-1.114l-2.5 2.25a.75.75 0 0 0 0 1.114l2.5 2.25a.75.75 0 1 0 1.004-1.114l-1.048-.943h9.546A.75.75 0 0 0 14 10Z" clipRule="evenodd" />

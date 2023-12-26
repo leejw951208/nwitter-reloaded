@@ -24,6 +24,7 @@ export const Form = styled.form`
 
 export const Input = styled.input`
   padding: 10px 20px;
+  margin: 5px 0px;
   border-radius: 50px;
   border: none;
   width: 100%;
@@ -36,16 +37,20 @@ export const Input = styled.input`
       opacity: 0.8;
     }
   }
+  &.error {
+    border: 3px solid tomato;
+  }
 `;
 
 export const Error = styled.span`
   font-weight: 500;
   font-size: 14px;
   color: tomato;
+  margin-top: 10px;
 `;
 
 export const Switcher = styled.span`
-  margin-top: 20px;
+  margin-top: 15px;
   a {
     color: #1d9bf0;
   }

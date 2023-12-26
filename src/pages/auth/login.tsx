@@ -4,7 +4,7 @@ import { auth } from "../../services/firebase/firebase";
 import { Link, useNavigate } from "react-router-dom";
 import { FirebaseError } from "firebase/app";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { Error, Form, Input, Switcher, Title, Wrapper } from "./auth-style";
+import { Form, Input, Switcher, Title, Wrapper } from "./auth-style";
 import { FirebaseErrorMessage } from "../../constants/message";
 import styled from "styled-components";
 import OAuthGithub from "../../components/oauth/oauth-github";
@@ -61,28 +61,30 @@ export default function Login() {
     <Wrapper>
       <Title>Login</Title>
       <Form onSubmit={handleSubmit(onSubmit)}>
-        <Input type="text" placeholder="email" {...register('email', {
-          required: "이메일은 필수입니다.",
-          pattern: {
-            value: /\S+@\S+\.\S+/,
-            message: "올바른 이메일을 입력해주세요.",
-          }
-        })} />
-        <Error>{errors?.email?.message}</Error>        
-        <Input type="password" placeholder="password" {...register('password', {
-          required: "비밀번호는 필수입니다.",
-          minLength: {
-            value: 8,
-            message: "비밀번호는 최소 8글자 이상이어야 합니다.",
-          },
-        })} />
+      <Input 
+          className={errors?.email ? "error" : ""} 
+          type="text" 
+          placeholder="email" 
+          {...register('email', 
+            {
+              required: true,
+              pattern: /\S+@\S+\.\S+/
+            }
+          )} 
+        />
+        <Input 
+          className={errors?.password ? "error" : ""} 
+          type="password" 
+          placeholder="password" 
+          {...register('password', 
+            {required: true}
+          )} 
+        />
         <ForgotPassword>
           <Link to="/find-password">Forgot password?</Link> 
         </ForgotPassword>
-        <Error>{errors?.password?.message}</Error>
         <Input type="submit" value={loading ? "Loading..." : "Login"}/>
       </Form>
-      <Error>{errors?.root?.message}</Error>
       <Switcher>
         Don't have an account? <Link to="/join">Join &rarr;</Link>
       </Switcher>
