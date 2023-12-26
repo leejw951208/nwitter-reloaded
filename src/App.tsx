@@ -23,7 +23,7 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: "profile",
+        path: "/profile",
         element: <Profile />,
       }
     ]
@@ -33,15 +33,15 @@ const router = createBrowserRouter([
     element: <Anonymous><AnonymousLayout /></Anonymous>,
     children: [
       {
-        path: "login",
+        path: "/login",
         element: <Login />
       },
       {
-        path: "join",
+        path: "/join",
         element: <Join />
       },
       {
-        path: "find-password",
+        path: "/find-password",
         element: <FindPassword />
       }
     ]
