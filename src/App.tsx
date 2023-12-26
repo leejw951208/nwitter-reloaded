@@ -15,33 +15,33 @@ import Anonymous from "./components/layout/anonymous"
 
 const router = createBrowserRouter([
   {
-    path: `${import.meta.env.BASE_URL}`,
+    path: "/nwitter-reloaded",
     element: <Protected><Layout /></Protected>,
     children: [
       {
-        path: "",
+        path: "/",
         element: <Home />,
       },
       {
-        path: "profile",
+        path: "/profile",
         element: <Profile />,
       }
     ]
   },
   {
-    path: `${import.meta.env.BASE_URL}`,
+    path: "/nwitter-reloaded",
     element: <Anonymous><AnonymousLayout /></Anonymous>,
     children: [
       {
-        path: "login",
+        path: "/login",
         element: <Login />
       },
       {
-        path: "join",
+        path: "/join",
         element: <Join />
       },
       {
-        path: "find-password",
+        path: "/find-password",
         element: <FindPassword />
       }
     ]
