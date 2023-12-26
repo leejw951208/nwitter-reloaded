@@ -15,31 +15,33 @@ import Anonymous from "./components/layout/anonymous"
 
 const router = createBrowserRouter([
   {
+    path: "",
     element: <Protected><Layout /></Protected>,
     children: [
       {
-        path: `${import.meta.env.BASE_URL}`,
+        path: "",
         element: <Home />,
       },
       {
-        path: `${import.meta.env.BASE_URL}profile`,
+        path: "profile",
         element: <Profile />,
       }
     ]
   },
   {
+    path: "",
     element: <Anonymous><AnonymousLayout /></Anonymous>,
     children: [
       {
-        path: `${import.meta.env.BASE_URL}login`,
+        path: "login",
         element: <Login />
       },
       {
-        path: `${import.meta.env.BASE_URL}join`,
+        path: "join",
         element: <Join />
       },
       {
-        path: `${import.meta.env.BASE_URL}find-password`,
+        path: "find-password",
         element: <FindPassword />
       }
     ]

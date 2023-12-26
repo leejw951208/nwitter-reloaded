@@ -2,7 +2,7 @@ import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { auth } from "../../services/firebase/firebase";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Error, Form, Input, Switcher, Title, Wrapper } from "./auth-style";
 import { FirebaseErrorMessage } from "../../constants/message";
 import OAuthGithub from "../../components/oauth/oauth-github";
@@ -27,7 +27,7 @@ export default function Join() {
         sendEmailVerification(result.user)
           .then(() => {
             alert("인증 메일이 발송되었습니다.");
-            navigate(import.meta.env.BASE_URL)
+            navigate("/")
           })
       })
       .catch(error => {
@@ -61,7 +61,7 @@ export default function Join() {
         <Input type="submit" value={loading ? "Loading..." : "Join"}/>
       </Form>
       <Switcher>
-        Already have an account? <Link to={`${import.meta.env.BASE_URL}login`}>Login</Link>
+        Already have an account? <Link to="/login">Login</Link>
       </Switcher>
       <OAuthGoogle resetForm={reset}/>
       <OAuthGithub resetForm={reset}/>

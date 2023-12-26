@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { auth } from "../../services/firebase/firebase";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FirebaseError } from "firebase/app";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { Error, Form, Input, Switcher, Title, Wrapper } from "./auth-style";
@@ -40,7 +40,7 @@ export default function Login() {
           auth.signOut();
           throw "이메일 인증 후 로그인 가능합니다.";          
         }
-        navigate(import.meta.env.BASE_URL)
+        navigate("/")
       })
       .catch((error) => {
         if (error instanceof FirebaseError) {
@@ -77,14 +77,14 @@ export default function Login() {
           },
         })} />
         <ForgotPassword>
-          <Link to={`${import.meta.env.BASE_URL}find-password`}>Forgot password?</Link> 
+          <Link to="/find-password">Forgot password?</Link> 
         </ForgotPassword>
         <Error>{errors?.password?.message}</Error>
         <Input type="submit" value={loading ? "Loading..." : "Login"}/>
       </Form>
       <Error>{errors?.root?.message}</Error>
       <Switcher>
-        Don't have an account? <Link to={`${import.meta.env.BASE_URL}join`}>Join &rarr;</Link>
+        Don't have an account? <Link to="/join">Join &rarr;</Link>
       </Switcher>
       <OAuthGoogle resetForm={reset}/>
       <OAuthGithub resetForm={reset}/>
